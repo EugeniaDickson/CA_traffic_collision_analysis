@@ -24,11 +24,6 @@ collisions_2018_2020 = collisions %>% filter(collision_date > "2018-01-01" & col
 #ridding of accidents that don't have location
 collisions_2018_2020 = collisions_2018_2020 %>% filter(is.na(latitude) != TRUE, is.na(longitude) != TRUE)
 
-# Get column names for all tables
-names_collisions = names(collisions_2018_2020)
-names_victims = names(victims)
-names_parties = names(parties)
-
 # data is fetched so disconnect it.
 dbDisconnect(con)
 
