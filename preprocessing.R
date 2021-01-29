@@ -1,6 +1,5 @@
 library(DBI)
 library(RSQLite)
-library(lubridate)
 
 ##########################################################
 ######## California Traffic Collision Data_SWITRS ########
