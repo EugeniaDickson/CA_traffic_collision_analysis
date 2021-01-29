@@ -2,13 +2,13 @@ library(DBI)
 library(RSQLite)
 library(lubridate)
 
-
 ##########################################################
 ######## California Traffic Collision Data_SWITRS ########
+########       Loading data from SQLite           ########
 ##########################################################
 
 #connect to sqlite database
-con <- dbConnect(SQLite(), "./switrs.sqlite")
+con = dbConnect(SQLite(), "./switrs.sqlite")
 
 # Show List of Tables
 tables = as.data.frame(dbListTables(con))
@@ -33,5 +33,14 @@ names_parties = names(parties)
 # data is fetched so disconnect it.
 dbDisconnect(con)
 
-write.csv(collisions_2018_2020, "./collisions_2018_2020.csv")
+# get case_id's from selected cases:
+case_ids = data.frame(case_id = collisions_2018_2020$case_id)
 
+#filter victims and parties tables by selected case_id's
+victims_2018_2020 = inner_join(victims, case_ids, by = "case_id")
+parties_2018_2020 = inner_join(parties, case_ids, by = "case_id")
+
+#exporting selection to csv for further processing
+write.csv(collisions_2018_2020, "./collisions_2018_2020.csv", row.names = FALSE)
+write.csv(victims_2018_2020, "./victims_2018_2020.csv", row.names = FALSE)
+write.csv(parties_2018_2020, "./parties_2018_2020.csv", row.names = FALSE)
