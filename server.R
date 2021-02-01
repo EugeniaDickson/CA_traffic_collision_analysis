@@ -126,22 +126,29 @@ shinyServer(function(input, output){
       filter(collision_date >= input$date_range[1] &
                collision_date <= input$date_range[2])
   })
-# show total killed info box 
+
+# show total accidents info box 
+
+  
+  output$totalAccidents = renderInfoBox({
+    infoBox(nrow(collisions_subset()), title = "TOTAL ACCIDENTS", icon = icon("fas fa-car-crash"))
+  })  
+  # show total killed info box  
   output$totalKilled = renderInfoBox({
     total_killed = collisions_subset() %>% summarize(sum(killed_victims))
-    infoBox(total_killed, title = "TOTAL KILLED", icon = icon("fas fa-skull-crossbones"))
+    infoBox(paste0(total_killed, " / ", round(total_killed*100/nrow(collisions_subset()), 2), "%"), title = "TOTAL KILLED", icon = icon("fas fa-skull-crossbones"))
   })  
   
 #show total injured info box
   output$totalInjured = renderInfoBox({
     total_injured = collisions_subset() %>% summarize(sum(injured_victims))
-    infoBox(total_injured, title = "TOTAL INJURED", icon = icon("fas fa-user-injured"))
+    infoBox(paste0(total_injured, " / ", round(total_injured*100/nrow(collisions_subset()), 2), "%"), title = "TOTAL INJURED", icon = icon("fas fa-user-injured"))
   })  
   
 #show alcohol involved info box
   output$alcoholInvolved = renderInfoBox({
     alcohol_involved = collisions_subset() %>%filter(is.na(alcohol_involved) != TRUE) %>% summarise(sum(alcohol_involved))
-    infoBox(alcohol_involved, title = "ALCOHOL INVOLVED", icon = icon("fas fa-wine-bottle"))
+    infoBox(paste0(alcohol_involved, " / ", round(alcohol_involved*100/nrow(collisions_subset()), 2), "%"), title = "ALCOHOL INVOLVED", icon = icon("fas fa-wine-bottle"))
   })    
   
 # show heat map

@@ -7,7 +7,7 @@ library(shinydashboard)
 # library(shinythemes)
 library(plotly)
 library(leaflet)
-# library(leaflet.extras)
+library(leaflet.extras)
 
 collisions = read.csv("./collisions_2019_2021.csv", stringsAsFactors = FALSE) %>% 
   mutate(collision_date = parse_date(collision_date, "%m/%d/%Y"),

@@ -15,9 +15,10 @@ shinyUI(
   dashboardBody(
     tabItems(
       tabItem(tabName = "map",
-              fluidRow(infoBoxOutput("totalKilled"),
-                       infoBoxOutput("totalInjured"),
-                       infoBoxOutput("alcoholInvolved")),
+              fluidRow(infoBoxOutput("totalAccidents", width = 3),
+                       infoBoxOutput("totalKilled", width = 3),
+                       infoBoxOutput("totalInjured", width = 3),
+                       infoBoxOutput("alcoholInvolved", width = 3)),
               fluidRow(sidebarPanel(width = 2,
                                     sliderInput("date_range", "Select Time Range:",
                                                min = min(collisions$collision_date), 
@@ -34,7 +35,7 @@ shinyUI(
                                                  min = 0, max = 7,
                                                  value = 4, step = 0.25),
                                                ),
-                       box(height = 450, width = 10, leafletOutput("heatMap"))
+                       box(width = 10, leafletOutput("heatMap"))
                         )),
       tabItem(tabName = "distributions",
               fluidRow(
@@ -65,7 +66,7 @@ shinyUI(
               fluidRow(
                 box(height = 50, width = 12,
                     title = "COVID IMPACT ON TRAFFIC ACCIDENT FREQUENCY"),
-                box(height = 300, width = 12,
+                box(width = 12,
                     plotOutput("covidDistr", width = "100%", height = 700))
                 )
               )

@@ -1,0 +1,13 @@
+name: ca_traffic_collision_data
+title: ca_traffic_collision_data
+username:
+account: eugeniadickson
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3557538
+bundleId: 4167863
+url: https://eugeniadickson.shinyapps.io/ca_traffic_collision_data/
+when: 1612199873.586
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: preprocessing.R|README.md
