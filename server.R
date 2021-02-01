@@ -1,25 +1,50 @@
 shinyServer(function(input, output){
 
-# show hourly distribution plot
 
   
   
 # show weekly distribution plot
-  # 
-  # distr_data = collisions %>% group_by(weekdays)
-  # 
-  # weeklyDensity = renderPlotly({
-  #   
-  #   diamonds1 <- diamonds[which(diamonds$cut == "Fair"),]
-  #   density1 <- density(distr_data$weekdays)
-  #   
-  #   fig = plot_ly(data = distr_data, x = ~density1$x, y = ~density1$y, 
-  #                  type = 'scatter', mode = 'lines', name = 'Fair cut', fill = 'tozeroy') %>%
-  #     layout(xaxis = list(title = 'Carat'),
-  #                         yaxis = list(title = 'Density'))
-  #   
-  # }) 
+  densityDataWeek = reactive({
+    collisions %>%
+      filter(collision_severity %in% input$severitycheckb &
+               pcf_violation_category %in% input$causecheckb &
+               motor_vehicle_involved_with %in% input$partiescheckb) %>%
+      group_by(weekdays)
+  })
   
+  output$weeklyDensity = renderPlot({
+    densityDataWeek() %>% ggplot(aes(x = densityDataWeek()$weekdays, fill = densityDataWeek()$collision_severity)) +
+      geom_density(alpha=0.1) +
+      ggtitle("Weekly Accident Distribution") +
+      xlab("Day of Week") + ylab("Percent of Accidents") +
+      theme(plot.title = element_text(hjust = 0.5, size = 30, face = 'bold'),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20)) + 
+      labs(fill = "Day of Week", color = "Day of Week")
+
+  })
+  
+# show hourly distribution plot
+  densityDataHour = reactive({
+    collisions %>%
+      filter(collision_severity %in% input$severitycheckb &
+               pcf_violation_category %in% input$causecheckb &
+               motor_vehicle_involved_with %in% input$partiescheckb) %>%
+      group_by(collision_time)
+  })
+  
+  output$hourlyDensity = renderPlot({
+    densityDataHour() %>% ggplot(aes(x = densityDataHour()$collision_time, fill = densityDataHour()$collision_severity)) +
+      geom_density(alpha=0.1) +
+      ggtitle("Daily Accident Distribution") +
+      xlab("Time of Day") + ylab("Percent of Accidents") +
+      theme(plot.title = element_text(hjust = 0.5, size = 30, face = 'bold'),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20)) + 
+      labs(fill = "Time of Day", color = "Day of Week")
+
+  })
+
   # show party at fault bar plot 
  #############BACKUP
   # party_at_fault = collisions %>% 
@@ -51,36 +76,66 @@ shinyServer(function(input, output){
   # })
     
   
-  
+  ### VERSION 2 WORKING
   barPlotData = reactive({
-    collisions %>% filter(is.na(!!sym(barplot_col_name[[input$selectBarPlot]])) == FALSE) %>%
-      select(!!sym(barplot_col_name[[input$selectBarPlot]])) %>%
-      group_by(!!sym(barplot_col_name[[input$selectBarPlot]])) %>% 
-      summarize(totals = sum(n())) %>% 
-      arrange(desc(totals))
+    if (input$selectBarPlot == "Collision Severity") {
+        data = collisions %>% filter(is.na(collision_severity) == FALSE) %>%
+          mutate(colname = collision_severity) %>%
+          group_by(colname) %>%
+          summarize(totals = sum(n())) %>% 
+          arrange(desc(totals))
+        return(data)}
+    if (input$selectBarPlot == "Party at Fault") {
+        data = collisions %>% filter(is.na(statewide_vehicle_type_at_fault) == FALSE) %>%
+          mutate(colname = statewide_vehicle_type_at_fault) %>%
+          group_by(colname) %>%
+          summarize(totals = sum(n())) %>% 
+          arrange(desc(totals))
+        return(data)}
+    if (input$selectBarPlot == "Crash Cause") {
+        data = collisions %>% filter(is.na(pcf_violation_category) == FALSE) %>%
+          mutate(colname = pcf_violation_category) %>%
+          group_by(colname) %>%
+          summarize(totals = sum(n())) %>% 
+          arrange(desc(totals))
+        return(data)}
+    if (input$selectBarPlot == "Parties involved") {
+      data = collisions %>% filter(is.na(motor_vehicle_involved_with) == FALSE) %>%
+          mutate(colname = motor_vehicle_involved_with) %>%
+               group_by(colname) %>%
+               summarize(totals = sum(n())) %>% 
+        arrange(desc(totals))
+             return(data)}
   })
   
-  output$barPlot = renderPlotly({
-    barPlot = plot_ly(x = barPlotData()[, 1], y = barPlotData()$totals, type = 'bar') %>% 
-      layout(title = input$selectBarPlot, yaxis = list(title = 'Count'))
-  })
+  # sort bars by totals (I'm asking for too much to make it work)
+  # xform = list(
+  #   categoryorder = "array",
+  #   categoryarray = barPlotData()$colname,
+  #   title = "Party at Fault"
+  # )
+
+   output$barPlot = renderPlotly({
+     barPlot = plot_ly(x = barPlotData()$colname, y = barPlotData()$totals, type = 'bar') %>%
+       layout(title = input$selectBarPlot, yaxis = list(title = 'Count'))
+   })
   
-# show severity bar plot
-  
-  
-  
-# show cause of accident bar plot
-  
-  
-  
-# most popular crash victim
-  
+  ###### VERSION 1 SEMI-WORKING
+  # barPlotData = reactive({
+  #   collisions %>% filter(is.na(!!sym(barplot_col_name[[input$selectBarPlot]])) == FALSE) %>%
+  #     select(!!sym(barplot_col_name[[input$selectBarPlot]])) %>%
+  #     group_by(!!sym(barplot_col_name[[input$selectBarPlot]])) %>% 
+  #     summarize(totals = sum(n())) %>% 
+  #     arrange(desc(totals))
+  # })
+  # 
+  # output$barPlot = renderPlotly({
+  #   barPlot = plot_ly(x = barPlotData()[, 1], y = barPlotData()$totals, type = 'bar') %>% 
+  #     layout(title = input$selectBarPlot, yaxis = list(title = 'Count'))
+  # })
   
 #----------HEAT MAP TAB ------------ 
-  
-  
-  
-  collisions_subset <- reactive({
+  collisions_subset = reactive({
     collisions %>%
       filter(collision_date >= input$date_range[1] &
                collision_date <= input$date_range[2])
@@ -93,14 +148,7 @@ shinyServer(function(input, output){
   
 #show total injured info box
   output$totalInjured = renderInfoBox({
-    # ped_injured = collisions %>% summarize(sum(pedestrian_injured_count))
-    # bicycle_injured = collisions %>% summarize(sum(bicyclist_injured_count))
-    # motorcycle_injured = collisions %>% summarize(sum(motorcyclist_injured_count))
     total_injured = collisions_subset() %>% summarize(sum(injured_victims))
-    # text1 = HTML(paste(tags$h6(ped_injured, "pedestrians", br()),
-    #                    tags$h6(bicycle_injured, "bicyclists", br()),
-    #                    tags$h6(motorcycle_injured, "motorcyclists")
-    #              ))
     infoBox(total_injured, title = "TOTAL INJURED", icon = icon("fas fa-user-injured"))
   })  
   

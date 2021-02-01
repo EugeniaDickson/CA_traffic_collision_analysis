@@ -7,8 +7,8 @@ shinyUI(
                      image = "./avatar.png"),
     sidebarMenu(
       menuItem("Map", tabName = "map", icon = icon("map")),
-      menuItem("Top", tabName = "barcharts", icon = icon("bar-chart-o")),
-      menuItem("Time", tabName = "distributions", icon = icon("fal fa-chart-area")),
+      menuItem("Timeline distribution", tabName = "distributions", icon = icon("fal fa-chart-area")),
+      menuItem("Ratings", tabName = "barcharts", icon = icon("bar-chart-o")),
       menuItem("COVID Impact", tabName = "covid", icon = icon("fas fa-viruses")),
       menuItem("Daylight Saving", tabName = "dls", icon = icon("fas fa-sun"))
                 )
@@ -40,13 +40,13 @@ shinyUI(
       tabItem(tabName = "distributions",
               fluidRow(
                 box(
-                column(4, checkboxGroupInput(inputId='severitycheckb',label = h4("Select severity level"), choices = severity_list, selected = "injury_all")),
-                column(4, checkboxGroupInput(inputId='partiescheckb',label = h4("Select party"), choices = parties_list, selected = "party_all")),
-                column(4, checkboxGroupInput(inputId='severitycheckb',label = h4("Select cause of crash"), choices = cause_crash, selected = "cause_all")),
+                column(4, checkboxGroupInput(inputId='severitycheckb',label = h4("Select severity level"), choices = severity_list, selected = "fatal")),
+                column(4, checkboxGroupInput(inputId='partiescheckb',label = h4("Select party"), choices = parties_list, selected = "pedestrian")),
+                column(4, checkboxGroupInput(inputId='causecheckb',label = h4("Select cause of crash"), choices = cause_crash, selected = "dui")),
                 width = 12)),
               fluidRow(
-                      box(plotlyOutput("hourlyDensity"), width = 12, height = 300), #hourly distribution
-                      box(plotlyOutput("weeklyDensity"), width = 12, height = 300)  #weekly distribution
+                      box(plotOutput("hourlyDensity"), width = 6, height = 600), #hourly distribution
+                      box(plotOutput("weeklyDensity"), width = 6, height = 600)  #weekly distribution
                       )
              ),
       tabItem(tabName = "barcharts",
