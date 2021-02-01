@@ -19,7 +19,6 @@ shinyServer(function(input, output){
             axis.title.x = element_text(size = 20),
             axis.title.y = element_text(size = 20)) +
       labs(fill = "Day of Week", color = "Day of Week")
-
   })
   
   #NOT WORKING BARPLOT
@@ -63,37 +62,6 @@ shinyServer(function(input, output){
       labs(fill = "Time of Day", color = "Day of Week")
   })
 
-  # show party at fault bar plot 
- #############BACKUP
-  # party_at_fault = collisions %>% 
-  #   filter(is.na(statewide_vehicle_type_at_fault) != TRUE) %>% 
-  #   select(statewide_vehicle_type_at_fault) %>%
-  #   group_by(statewide_vehicle_type_at_fault) %>% summarize(totals = sum(n())) %>% arrange(desc(totals))
-  # names_sorted = party_at_fault$statewide_vehicle_type_at_fault
-  # #sort the bars by number
-  # xform = list(
-  #   categoryorder = "array",
-  #   categoryarray = names_sorted,
-  #   title = "Party at Fault"
-  # )
-  # 
-  # output$partyAtFault = renderPlotly({
-  #   
-  #   partyAtFault = plot_ly(x = ~party_at_fault$statewide_vehicle_type_at_fault, y = ~party_at_fault$totals, type = 'bar') %>% 
-  #     layout(title = 'Party at Fault', yaxis = list(title = 'Count'), xaxis = xform)
-  # })
-  #####################    
-
-  # barPlotColName = reactive({
-  #   switch(input$selectBarPlot, 
-  #                     "Collision Severity" = "collision_severity",
-  #                     "Party at Fault" = "statewide_vehicle_type_at_fault", 
-  #                     "Crash Cause" = "pcf_violation_category", 
-  #                     "Victims" = "motor_vehicle_involved_with"
-  #   )
-  # })
-    
-  
   ### VERSION 2 WORKING
   barPlotData = reactive({
     if (input$selectBarPlot == "Collision Severity") {
@@ -186,14 +154,31 @@ shinyServer(function(input, output){
   
 #----------COVID IMPACT TAB ------------    
 # show COVID year distribution
-  
-  
+  xticks = unique(floor_date(collisions$collision_date, "month"))
+
+  output$covidDistr = renderPlot({
+    collisions %>%
+      ggplot(aes(collision_date)) +
+      geom_density(fill = "red", alpha = 0.5) +
+      ggtitle("Hourly Accident Distribution") +
+      xlab("Year and Month") + ylab("Percent of Accidents") +
+      geom_vline(xintercept=COVID_shelter_order,
+                 linetype="dashed", colour="black") +
+      theme(plot.title = element_text(hjust = 0.5, size = 30, face = 'bold'),
+            axis.title.x = element_text(size = 20),
+            axis.title.y = element_text(size = 20)) + 
+      labs(fill = "Day of Week", color = "Day of Week") +
+      theme_bw() +
+      theme(axis.text.x = element_text(size = 12, angle = 90)) +
+      scale_x_continuous(labels = xticks, breaks = xticks)
+      
+  })
 
   
   
 #----------DAYLIGHT SAVING TAB ---------  
 # show  daylight saving box plot
-  
+#TBD  
   
   
   

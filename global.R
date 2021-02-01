@@ -1,22 +1,23 @@
 library(tidyverse)
+library(lubridate)
 library(shiny)
 library(shinydashboard)
-library(DT)
-library(googleVis)
-library(shinythemes)
+# library(DT)
+# library(googleVis)
+# library(shinythemes)
 library(plotly)
 library(leaflet)
-library(leaflet.extras)
+# library(leaflet.extras)
 
 collisions = read.csv("./collisions_2019_2021.csv", stringsAsFactors = FALSE) %>% 
   mutate(collision_date = parse_date(collision_date, "%m/%d/%Y"),
          collision_time = parse_time(collision_time),
          weekdays = weekdays(collision_date)) %>%
   mutate(timestamp = paste0(collision_date, " ", collision_time))
+COVID_shelter_order = parse_date(c("2020-01-25", "2020-3-17"), "%Y-%m-%d")
 
-
-traffic_vol = read.csv("./monthly_traffic_volumes_2018_2020.csv") %>% mutate(date = parse_date(date))
-daylight_saving = read.csv("./daylight_savings.csv") %>% mutate(date = parse_date(date, "%m/%d/%Y"))
+# traffic_vol = read.csv("./monthly_traffic_volumes_2018_2020.csv") %>% mutate(date = parse_date(date))
+# daylight_saving = read.csv("./daylight_savings.csv") %>% mutate(date = parse_date(date, "%m/%d/%Y"))
 
 severity_list = list(
   # "All" = "injury_all",

@@ -1,7 +1,6 @@
 shinyUI(
   dashboardPage(
   dashboardHeader(title = "CA Road Accidents"),
-
   dashboardSidebar(
     sidebarUserPanel("Eugenia Dickson",
                      image = "./avatar.png"),
@@ -9,8 +8,8 @@ shinyUI(
       menuItem("Map", tabName = "map", icon = icon("map")),
       menuItem("Timeline distribution", tabName = "distributions", icon = icon("fal fa-chart-area")),
       menuItem("Ratings", tabName = "barcharts", icon = icon("bar-chart-o")),
-      menuItem("COVID Impact", tabName = "covid", icon = icon("fas fa-viruses")),
-      menuItem("Daylight Saving", tabName = "dls", icon = icon("fas fa-sun"))
+      menuItem("COVID Impact", tabName = "covid", icon = icon("fas fa-viruses"))
+      # menuItem("Daylight Saving", tabName = "dls", icon = icon("fas fa-sun"))
                 )
                   ),
   dashboardBody(
@@ -64,13 +63,17 @@ shinyUI(
               ),
       tabItem(tabName = "covid",
               fluidRow(
-                box(height = 300, width = 12))
-              ),
-      tabItem(tabName = "dls",
-              fluidRow(
-                box(height = 300,width = 12)
-                      )
+                box(height = 50, width = 12,
+                    title = "COVID IMPACT ON TRAFFIC ACCIDENT FREQUENCY"),
+                box(height = 300, width = 12,
+                    plotOutput("covidDistr", width = "100%", height = 700))
+                )
               )
+      # tabItem(tabName = "dls",
+      #         fluidRow(
+      #           box(height = 300,width = 12)
+      #                 )
+      #         )
             )
   )
 ))
