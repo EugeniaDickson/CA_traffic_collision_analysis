@@ -1,42 +1,42 @@
 shinyUI(
   dashboardPage(
-    skin = "black",
   dashboardHeader(title = "CA Road Accidents"),
 
   dashboardSidebar(
     sidebarUserPanel("Eugenia Dickson",
                      image = "./avatar.png"),
     sidebarMenu(
-      menuItem("Time", tabName = "distributions", icon = icon("fal fa-chart-area")),
-      menuItem("Top", tabName = "barcharts", icon = icon("bar-chart-o")),
       menuItem("Map", tabName = "map", icon = icon("map")),
-      # menuItem("Data", tabName = "data", icon = icon("database")),
+      menuItem("Top", tabName = "barcharts", icon = icon("bar-chart-o")),
+      menuItem("Time", tabName = "distributions", icon = icon("fal fa-chart-area")),
       menuItem("COVID Impact", tabName = "covid", icon = icon("fas fa-viruses")),
       menuItem("Daylight Saving", tabName = "dls", icon = icon("fas fa-sun"))
-                )#,
-    # selectizeInput("selected",
-    #                "Select Item to Display"
-    #                )
+                )
                   ),
   dashboardBody(
     tabItems(
       tabItem(tabName = "map",
-              fluidRow(column(12,
-                       infoBoxOutput("totalKilled"),
+              fluidRow(infoBoxOutput("totalKilled"),
                        infoBoxOutput("totalInjured"),
-                       infoBoxOutput("alcoholInvolved"))),
-              fluidRow(
-                       column(12, 
-                              sidebarPanel(width = 3, height = 500,
-                                                   sliderInput("range", "Range:",
-                                                               min = 1, max = 1000,
-                                                               value = c(200,500)),
-                                                   sliderInput("range", "Range:",
-                                                               min = 1, max = 1000,
-                                                               value = c(200,500))
-                                           ),
-                              box(height = 600, width = 9)
-              ))),
+                       infoBoxOutput("alcoholInvolved")),
+              fluidRow(sidebarPanel(width = 2,
+                                    sliderInput("date_range", "Select Time Range:",
+                                               min = min(collisions$collision_date), 
+                                               max = max(collisions$collision_date),
+                                               value = c(min(collisions$collision_date), 
+                                                         max(collisions$collision_date))),
+                                     sliderInput("opacity", "Opacity:",
+                                                 min = 0, max = 1,
+                                                 value = 0.5, step = 0.05),
+                                     sliderInput("radius", "Radius:",
+                                                 min = 0, max = 6,
+                                                 value = 3, step = 0.25),
+                                     sliderInput("blur", "Blur:",
+                                                 min = 0, max = 7,
+                                                 value = 4, step = 0.25),
+                                               ),
+                       box(height = 450, width = 10, leafletOutput("heatMap"))
+                        )),
       tabItem(tabName = "distributions",
               fluidRow(
                 box(
@@ -45,13 +45,22 @@ shinyUI(
                 column(4, checkboxGroupInput(inputId='severitycheckb',label = h4("Select cause of crash"), choices = cause_crash, selected = "cause_all")),
                 width = 12)),
               fluidRow(
-                      box(htmlOutput("density_hourly"), width = 12, height = 300), #hourly distribution
-                      box(htmlOutput("density_weekly"), width = 12, height = 300)  #weekly distribution
+                      box(plotlyOutput("hourlyDensity"), width = 12, height = 300), #hourly distribution
+                      box(plotlyOutput("weeklyDensity"), width = 12, height = 300)  #weekly distribution
                       )
              ),
       tabItem(tabName = "barcharts",
-              fluidRow(box(width = 12, height = 300)),
-              fluidRow(box(width = 12, height = 300))
+              fluidRow(
+                box(width = 12, height = 100,
+                    column(6,
+                    selectizeInput("selectBarPlot", label = "Select Item", 
+                                   choices = barplot_list, selected = "Collision Severity"))
+                    )
+              ),
+              fluidRow(
+                box(width = 12,
+                plotlyOutput("barPlot", width = "100%", height = 700))
+                )
               ),
       tabItem(tabName = "covid",
               fluidRow(
