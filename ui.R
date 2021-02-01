@@ -35,7 +35,7 @@ shinyUI(
                                                  min = 0, max = 7,
                                                  value = 4, step = 0.25),
                                                ),
-                       box(width = 10, leafletOutput("heatMap"))
+                       box(height = 440, width = 10, leafletOutput("heatMap"))
                         )),
       tabItem(tabName = "distributions",
               fluidRow(
