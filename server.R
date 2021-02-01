@@ -1,9 +1,7 @@
 shinyServer(function(input, output){
 
-
-  
-  
 # show weekly distribution plot
+  #V1 WORKING DENSITY
   densityDataWeek = reactive({
     collisions %>%
       filter(collision_severity %in% input$severitycheckb &
@@ -19,10 +17,31 @@ shinyServer(function(input, output){
       xlab("Day of Week") + ylab("Percent of Accidents") +
       theme(plot.title = element_text(hjust = 0.5, size = 30, face = 'bold'),
             axis.title.x = element_text(size = 20),
-            axis.title.y = element_text(size = 20)) + 
+            axis.title.y = element_text(size = 20)) +
       labs(fill = "Day of Week", color = "Day of Week")
 
   })
+  
+  #NOT WORKING BARPLOT
+  # barDataWeek = reactive({
+  #   collisions %>%
+  #     filter(collision_severity %in% input$severitycheckb &
+  #              pcf_violation_category %in% input$causecheckb &
+  #              motor_vehicle_involved_with %in% input$partiescheckb) %>%
+  #     group_by(weekdays) %>% summarize(totals = sum(n()))
+  # })
+  # 
+  # output$weeklyBar = renderPlot({
+  #   weeklyBar = ggplot(data = barDataWeek()) +
+  #     geom_bar(aes(x = barDataWeek()$weekdays, y = barDataWeek()$totals), stat = "identity") +
+  #     ggtitle("Daily Accident Distribution") +
+  #     xlab("Time of Day") + ylab("Percent of Accidents") +
+  #     theme(plot.title = element_text(hjust = 0.5, size = 30, face = 'bold'),
+  #           axis.title.x = element_text(size = 20),
+  #           axis.title.y = element_text(size = 20)) + 
+  #     labs(fill = "Time of Day", color = "Day of Week")
+  #   
+  # })
   
 # show hourly distribution plot
   densityDataHour = reactive({
@@ -42,7 +61,6 @@ shinyServer(function(input, output){
             axis.title.x = element_text(size = 20),
             axis.title.y = element_text(size = 20)) + 
       labs(fill = "Time of Day", color = "Day of Week")
-
   })
 
   # show party at fault bar plot 
