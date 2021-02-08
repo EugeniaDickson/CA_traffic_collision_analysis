@@ -2,9 +2,7 @@ library(tidyverse)
 library(lubridate)
 library(shiny)
 library(shinydashboard)
-# library(DT)
-# library(googleVis)
-# library(shinythemes)
+library(hms)
 library(plotly)
 library(leaflet)
 library(leaflet.extras)
@@ -14,11 +12,10 @@ collisions = read.csv("./collisions_2019_2021.csv", stringsAsFactors = FALSE) %>
          collision_time = parse_time(collision_time),
          weekdays = weekdays(collision_date)) %>%
   mutate(timestamp = paste0(collision_date, " ", collision_time))
-COVID_shelter_order = parse_date(c("2020-01-25", "2020-3-17"), "%Y-%m-%d")
+COVID_milestones = read.csv("./covid_milestones.csv", stringsAsFactors = FALSE) %>% mutate(date = parse_date(date, "%Y-%m-%d"))
+traffic_vol = read.csv("./monthly_traffic_volumes_2019_2020.csv") %>% mutate(date = parse_date(date, "%Y-%m-%d"))
 
-# traffic_vol = read.csv("./monthly_traffic_volumes_2018_2020.csv") %>% mutate(date = parse_date(date))
-# daylight_saving = read.csv("./daylight_savings.csv") %>% mutate(date = parse_date(date, "%m/%d/%Y"))
-
+#------------------INPUT LISTS-------------------
 severity_list = list(
   # "All" = "injury_all",
   "Fatal injury" = "fatal",
@@ -30,7 +27,10 @@ parties_list = list(
   # "All" = "party_all",
   "Pedestrian" = "pedestrian",
   "Bicycle" = "bicycle",
-  "Other motor vehicle"  = "other motor vehicle")
+  "Other motor vehicle"  = "other motor vehicle",
+  "Fixed object" = "fixed object",
+  "Parked vehicle" = "parked motor vehicle",
+  "Other object" = "other object")
 
 cause_crash = list(
   # "All" = "cause_all",
@@ -46,16 +46,3 @@ barplot_list = c(
   "Party at Fault", 
   "Crash Cause", 
   "Parties involved")
-
-
-# ### VERSION 1 SEMI-WORKING
-# barplot_col_name = list("Collision Severity" = "collision_severity",
-#                         "Party at Fault" = "statewide_vehicle_type_at_fault",
-#                         "Crash Cause" = "pcf_violation_category",
-#                         "Victims" = "motor_vehicle_involved_with")
-
-# ## VERSION 2 NOT-WORKING
-# barplot_col_name = list("Collision Severity",
-#                         "Party at Fault",
-#                         "Crash Cause",
-#                         "Victims")
